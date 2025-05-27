@@ -95,6 +95,117 @@ function App() {
 export default App;
 
 ```
+### Home.js
+```
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+function Home() {
+  return (
+    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+      <h1>CHECK YOUR BMI</h1>
+      <Link to="/bmi">
+        <button>Go to BMI Calculator</button>
+      </Link>
+    </div>
+  );
+}
+
+export default Home;
+
+```
+### BMIForm.js
+```
+// src/pages/BMIForm.js
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../App.css';
+
+function BMIForm() {
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!height || !weight || isNaN(height) || isNaN(weight)) {
+      alert('Please enter valid height and weight.');
+      return;
+    }
+    navigate('/result', { state: { height, weight } });
+  };
+
+  return (
+    <div className="container">
+      <div className="sensor"></div>
+      <h1>BMI Calculator</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter height (cm)"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Enter weight (kg)"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+        />
+        <button type="submit">Calculate BMI</button>
+      </form>
+    </div>
+  );
+}
+
+export default BMIForm;
+
+```
+### Result.js
+```
+// src/pages/Result.js
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../App.css';
+
+function Result() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { height, weight } = location.state || {};
+
+  if (!height || !weight) {
+    return <p>Invalid input. Please go back and enter values.</p>;
+  }
+
+  const h = parseFloat(height) / 100;
+  const w = parseFloat(weight);
+  const bmi = (w / (h * h)).toFixed(2);
+
+  let category = '';
+  if (bmi < 18.5) category = 'Underweight';
+  else if (bmi < 24.9) category = 'Normal';
+  else if (bmi < 29.9) category = 'Overweight';
+  else category = 'Obese';
+
+  return (
+    <div className="container">
+      <div className="sensor"></div>
+      <h1>Your BMI Result</h1>
+      <div className="screen">
+        <h2>BMI: {bmi}</h2>
+        <p>Status: {category}</p>
+      </div>
+      <button className="back-button" onClick={() => navigate('/bmi')}>
+        Calculate Again
+      </button>
+    </div>
+  );
+}
+
+export default Result;
+
+```
+
 ### APP.css
 ```
 body {
